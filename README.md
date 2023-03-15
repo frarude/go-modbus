@@ -1,6 +1,7 @@
 # go-modbus
 
 ## About
+This is a fork of (...) because I was missing real timeout handling on hanging serial communications. --> to be implemented!
 
 This [Go](http://golang.org/) package provides [Modbus](http://en.wikipedia.org/wiki/Modbus) access for client (master) applications to communicate with server (slave) devices, over both [TCP/IP](http://www.modbus.org/docs/Modbus_Messaging_Implementation_Guide_V1_0b.pdf) and [Serial Line/RTU/ASCII](http://www.modbus.org/docs/Modbus_over_serial_line_V1_02.pdf) frame protocols.
 
