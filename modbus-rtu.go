@@ -118,6 +118,9 @@ func viaRTU(connection io.ReadWriteCloser, fnValidator func(byte) bool, slaveAdd
 
 		// transmit the ADU to the slave device via the
 		// serial port represented by the fd pointer
+		if debug {
+			log.Println("start writing...")
+		}
 		_, werr := connection.Write(adu)
 		if werr != nil {
 			if debug {
@@ -125,18 +128,27 @@ func viaRTU(connection io.ReadWriteCloser, fnValidator func(byte) bool, slaveAdd
 			}
 			return []byte{}, werr
 		}
+		if debug {
+			log.Println("...writing done")
+		}
 
 		// allow the slave device adequate time to respond
 		time.Sleep(time.Duration(frame.TimeoutInMilliseconds) * time.Millisecond)
 
 		// then attempt to read the reply
 		response := make([]byte, RTU_FRAME_MAXSIZE)
+		if debug {
+			log.Println("start reading...")
+		}
 		n, rerr := connection.Read(response)
 		if rerr != nil {
 			if debug {
 				log.Println(fmt.Sprintf("RTU Read Err: %s", rerr))
 			}
 			return []byte{}, rerr
+		}
+		if debug {
+			log.Println("...reading done")
 		}
 
 		// check the validity of the response
