@@ -7,7 +7,8 @@ package modbusclient
 
 import (
 	"fmt"
-	"github.com/tarm/serial"
+	//"github.com/tarm/serial"
+	"github.com/argandas/serial"
 	"io"
 	"log"
 	"time"
@@ -81,9 +82,10 @@ func (frame *RTUFrame) GenerateRTUFrame() []byte {
 
 // ConnectRTU attempts to access the Serial Device for subsequent
 // RTU writes and response reads from the modbus slave device
-func ConnectRTU(serialDevice string, baudRate int) (io.ReadWriteCloser, error) {
+func ConnectRTU(serialDevice string, baudRate int,timeout int) (io.ReadWriteCloser, error) {
 	conf := &serial.Config{Name: serialDevice, Baud: baudRate}
-	ctx, err := serial.OpenPort(conf)
+	ctx:=serial.New()
+	err := ctx.Open(serialDevice,baudRate,timeout)
 	return ctx, err
 }
 
