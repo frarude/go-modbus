@@ -123,6 +123,9 @@ func viaRTU(connection io.ReadWriteCloser, fnValidator func(byte) bool, slaveAdd
 		if debug {
 			log.Println("start writing...")
 		}
+		if connection.Available()>0 {
+			connection.Flush()
+		}
 		_, werr := connection.Write(adu)
 		if werr != nil {
 			if debug {
@@ -134,9 +137,15 @@ func viaRTU(connection io.ReadWriteCloser, fnValidator func(byte) bool, slaveAdd
 			log.Println("...writing done")
 		}
 
-		// allow the slave device adequate time to respond
-		time.Sleep(time.Duration(frame.TimeoutInMilliseconds) * time.Millisecond)
-
+		// wait for bytes being available to read... 
+		for x:=0;x<frame.TimeoutInMilliseconds;x+=1  {
+			// allow the slave device adequate time to respond
+			time.Sleep(1 * time.Millisecond)
+			if connection.Available()>0 {
+				break
+			}
+		}
+		
 		// then attempt to read the reply
 		response := make([]byte, RTU_FRAME_MAXSIZE)
 		if debug {
