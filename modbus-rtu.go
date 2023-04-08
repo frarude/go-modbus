@@ -9,7 +9,7 @@ import (
 	"fmt"
 	//"github.com/tarm/serial"
 	"github.com/argandas/serial"
-	"io"
+	//"io"  not needed in argandas serial
 	"log"
 	"time"
 )
@@ -83,7 +83,8 @@ func (frame *RTUFrame) GenerateRTUFrame() []byte {
 // ConnectRTU attempts to access the Serial Device for subsequent
 // RTU writes and response reads from the modbus slave device
 func ConnectRTU(serialDevice string, baudRate int,timeout int) (serial.SerialPort, error) {
-	conf := &serial.Config{Name: serialDevice, Baud: baudRate}
+	// bnot n eeded in argandas serial
+	//conf := &serial.Config{Name: serialDevice, Baud: baudRate}
 	ctx:=serial.New()
 	err := ctx.Open(serialDevice,baudRate,timeout)
 	return ctx, err
