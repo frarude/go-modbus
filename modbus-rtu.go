@@ -91,7 +91,7 @@ func ConnectRTU(serialDevice string, baudRate int,timeout time.Duration) (*seria
 }
 
 // DisconnectRTU closes the underlying Serial Device connection
-func DisconnectRTU(ctx serial.Port) {
+func DisconnectRTU(ctx *serial.SerialPort) {
 	ctx.Close()
 }
 
