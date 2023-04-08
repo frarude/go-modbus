@@ -10,6 +10,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	//"github.com/tarm/serial"
+	"github.com/argandas/serial"
 	"io"
 	"log"
 	"time"
