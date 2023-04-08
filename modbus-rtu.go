@@ -124,7 +124,7 @@ func viaRTU(connection serial.SerialPort, fnValidator func(byte) bool, slaveAddr
 		if debug {
 			log.Println("start writing...")
 		}
-		for ax:=connection.Available();;connection.Available()>0 {
+		for ax:=connection.Available();ax--;connection.Available()>0 {
 			connection.Read()
 		}
 		_, werr := connection.Write(adu)
@@ -152,12 +152,16 @@ func viaRTU(connection serial.SerialPort, fnValidator func(byte) bool, slaveAddr
 		if debug {
 			log.Println("start reading...")
 		}
-		n, rerr := connection.Read(response)
-		if rerr != nil {
-			if debug {
-				log.Println(fmt.Sprintf("RTU Read Err: %s", rerr))
+		n:=connection.Available();
+		for ax:=0;ax++;ax<n {
+			response[ax], rerr := connection.Read()
+		
+			if rerr != nil {
+				if debug {
+					log.Println(fmt.Sprintf("RTU Read Err: %s", rerr))
+				}
+				return []byte{}, rerr
 			}
-			return []byte{}, rerr
 		}
 		if debug {
 			log.Println("...reading done")
