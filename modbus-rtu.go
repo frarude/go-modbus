@@ -124,8 +124,8 @@ func viaRTU(connection serial.SerialPort, fnValidator func(byte) bool, slaveAddr
 		if debug {
 			log.Println("start writing...")
 		}
-		if connection.Available()>0 {
-			connection.Flush()
+		for ax:=connection.Available();;connection.Available()>0 {
+			connection.Read()
 		}
 		_, werr := connection.Write(adu)
 		if werr != nil {
