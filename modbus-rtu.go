@@ -82,7 +82,7 @@ func (frame *RTUFrame) GenerateRTUFrame() []byte {
 
 // ConnectRTU attempts to access the Serial Device for subsequent
 // RTU writes and response reads from the modbus slave device
-func ConnectRTU(serialDevice string, baudRate int,timeout int) (serial.SerialPort, error) {
+func ConnectRTU(serialDevice string, baudRate int,timeout time.Duration) (serial.SerialPort, error) {
 	// bnot n eeded in argandas serial
 	//conf := &serial.Config{Name: serialDevice, Baud: baudRate}
 	ctx:=serial.New()
