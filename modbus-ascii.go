@@ -9,7 +9,7 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	"github.com/tarm/serial"
+	//"github.com/tarm/serial"
 	"io"
 	"log"
 	"time"
@@ -81,9 +81,9 @@ func (frame *ASCIIFrame) GenerateASCIIFrame() []byte {
 
 // ConnectASCII attempts to access the Serial Device for subsequent
 // ASCII writes and response reads from the modbus slave device
-func ConnectASCII(serialDevice string, baudRate int) (io.ReadWriteCloser, error) {
-	conf := &serial.Config{Name: serialDevice, Baud: baudRate}
-	ctx, err := serial.OpenPort(conf)
+func ConnectASCII(serialDevice string, baudRate int,timeout time.Duration) (*serial.SerialPort, error) {
+	//conf := &serial.Config{Name: serialDevice, Baud: baudRate}
+	ctx, err := serial.OpenPort(serialDevice,baudRate,timeout)
 	return ctx, err
 }
 
