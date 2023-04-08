@@ -153,8 +153,9 @@ func viaRTU(connection serial.SerialPort, fnValidator func(byte) bool, slaveAddr
 			log.Println("start reading...")
 		}
 		n:=connection.Available();
+		var rerr error
 		for ax:=0;ax<n;ax++ {
-			response[ax], rerr := connection.Read()
+			response[ax], rerr = connection.Read()
 		
 			if rerr != nil {
 				if debug {
