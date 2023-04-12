@@ -171,7 +171,7 @@ func viaRTU(connection serial.SerialPort, fnValidator func(byte) bool, slaveAddr
 			}
 			return []byte{}, rerr
 		}
-		}
+		
 		if debug {
 			log.Println("...reading done")
 		}
