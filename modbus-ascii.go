@@ -201,12 +201,12 @@ func viaASCII(connection serial.Port, fnValidator func(byte) bool, slaveAddress,
 
 // ASCIIRead performs the given modbus Read function over ASCII to the given
 // serialDevice, using the given frame data
-func ASCIIRead(serialDeviceConnection io.ReadWriteCloser, slaveAddress, functionCode byte, startRegister, numRegisters uint16, timeOut int, debug bool) ([]byte, error) {
+func ASCIIRead(serialDeviceConnection serial.Port, slaveAddress, functionCode byte, startRegister, numRegisters uint16, timeOut int, debug bool) ([]byte, error) {
 	return viaASCII(serialDeviceConnection, ValidReadFunction, slaveAddress, functionCode, startRegister, numRegisters, []byte{}, timeOut, debug)
 }
 
 // ASCIIWrite performs the given modbus Write function over ASCII to the given
 // serialDevice, using the given frame data
-func ASCIIWrite(serialDeviceConnection io.ReadWriteCloser, slaveAddress, functionCode byte, startRegister, numRegisters uint16, data []byte, timeOut int, debug bool) ([]byte, error) {
+func ASCIIWrite(serialDeviceConnection serial.Port, slaveAddress, functionCode byte, startRegister, numRegisters uint16, data []byte, timeOut int, debug bool) ([]byte, error) {
 	return viaASCII(serialDeviceConnection, ValidWriteFunction, slaveAddress, functionCode, startRegister, numRegisters, data, timeOut, debug)
 }
