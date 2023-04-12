@@ -12,7 +12,7 @@ import (
 	//"github.com/tarm/serial"
 	//"github.com/argandas/serial"
 	"go.bug.st/serial"
-	"io"
+	//"io"
 	"log"
 	"time"
 )
