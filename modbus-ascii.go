@@ -10,7 +10,8 @@ import (
 	"encoding/hex"
 	"fmt"
 	//"github.com/tarm/serial"
-	"github.com/argandas/serial"
+	//"github.com/argandas/serial"
+	"go.bug.st/serial"
 	"io"
 	"log"
 	"time"
@@ -82,16 +83,17 @@ func (frame *ASCIIFrame) GenerateASCIIFrame() []byte {
 
 // ConnectASCII attempts to access the Serial Device for subsequent
 // ASCII writes and response reads from the modbus slave device
-func ConnectASCII(serialDevice string, baudRate int,timeout time.Duration) (*serial.SerialPort, error) {
-	// bnot n eeded in argandas serial
-	//conf := &serial.Config{Name: serialDevice, Baud: baudRate}
-	ctx:=serial.New()
-	err := ctx.Open(serialDevice,baudRate,timeout)
+func ConnectASCII(serialDevice string, baudRate int,timeout time.Duration) (serial.Port, error) {
+	conf := &serial.Mode{BaudRate: baudRate}
+	ctx,err := serial.Open(serialDevice,conf)
+	if err==nil {
+		err=ctx.SetReadTimeout(timeout)
+	}
 	return ctx, err
 }
 
 // DisconnectASCII closes the underlying Serial Device connection
-func DisconnectASCII(ctx io.ReadWriteCloser) {
+func DisconnectASCII(ctx serial.Port) {
 	ctx.Close()
 }
 
@@ -101,7 +103,7 @@ func DisconnectASCII(ctx io.ReadWriteCloser) {
 // information, attempts to open the serialDevice, and if successful, transmits
 // it to the modbus server (slave device) specified by the given serial connection,
 // and returns a byte array of the slave device's reply, and error (if any)
-func viaASCII(connection io.ReadWriteCloser, fnValidator func(byte) bool, slaveAddress, functionCode byte, startRegister, numRegisters uint16, data []byte, timeOut int, debug bool) ([]byte, error) {
+func viaASCII(connection serial.Port, fnValidator func(byte) bool, slaveAddress, functionCode byte, startRegister, numRegisters uint16, data []byte, timeOut int, debug bool) ([]byte, error) {
 	if fnValidator(functionCode) {
 		frame := new(ASCIIFrame)
 		frame.TimeoutInMilliseconds = timeOut
