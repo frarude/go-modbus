@@ -176,6 +176,12 @@ func viaRTU(connection serial.Port, fnValidator func(byte) bool, slaveAddress, f
 			log.Println("...reading done")
 		}
 
+		if n==0 { // probably timeout...
+			if debug { 
+				log.Println("RTU Read Timeout? Got 0 Bytes")
+			}
+			return []byte{},  errors.New("Timeout")
+		}
 		// check the validity of the response
 		if response[0] != frame.SlaveAddress || response[1] != frame.FunctionCode {
 			if debug {
