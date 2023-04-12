@@ -85,7 +85,7 @@ func (frame *RTUFrame) GenerateRTUFrame() []byte {
 // RTU writes and response reads from the modbus slave device
 func ConnectRTU(serialDevice string, baudRate int,timeout time.Duration) (serial.Port, error) {
 	conf := &serial.Mode{BaudRate: baudRate}
-	ctx,err := ctx.Open(serialDevice, conf)
+	ctx,err := serial.Open(serialDevice, conf)
 	if err==nil {
 		err=ctx.SetReadTimeout(timeout)
 	}
@@ -163,7 +163,7 @@ func viaRTU(connection serial.Port, fnValidator func(byte) bool, slaveAddress, f
 		if debug {
 			log.Println("start reading...")
 		}
-		response, rerr = connection.Read()
+		n, rerr := connection.Read(response)
 		
 		if rerr != nil {
 			if debug {
