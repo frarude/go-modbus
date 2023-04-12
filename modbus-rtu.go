@@ -180,6 +180,8 @@ func viaRTU(connection serial.Port, fnValidator func(byte) bool, slaveAddress, f
 		if response[0] != frame.SlaveAddress || response[1] != frame.FunctionCode {
 			if debug {
 				log.Println("RTU Response Invalid")
+				log.Print(response)
+				log.Printf("%s",string(response))
 			}
 			if response[0] == frame.SlaveAddress && (response[1]&0x7f) == frame.FunctionCode {
 				switch response[2] {
