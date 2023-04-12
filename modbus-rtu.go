@@ -8,7 +8,8 @@ package modbusclient
 import (
 	"fmt"
 	//"github.com/tarm/serial"
-	"github.com/argandas/serial"
+	//"github.com/argandas/serial"
+	"go.bug.st/serial"
 	//"io"  not needed in argandas serial
 	"log"
 	"time"
@@ -82,16 +83,17 @@ func (frame *RTUFrame) GenerateRTUFrame() []byte {
 
 // ConnectRTU attempts to access the Serial Device for subsequent
 // RTU writes and response reads from the modbus slave device
-func ConnectRTU(serialDevice string, baudRate int,timeout time.Duration) (*serial.SerialPort, error) {
-	// bnot n eeded in argandas serial
-	//conf := &serial.Config{Name: serialDevice, Baud: baudRate}
-	ctx:=serial.New()
-	err := ctx.Open(serialDevice,baudRate,timeout)
+func ConnectRTU(serialDevice string, baudRate int,timeout time.Duration) (serial.SerialPort, error) {
+	conf := &serial.Mode{BaudRate: baudRate}
+	ctx,err := ctx.Open(serialDevice, conf)
+	if err==nil {
+		err=ctx.SetReadTimeout(timeout)
+	}
 	return ctx, err
 }
 
 // DisconnectRTU closes the underlying Serial Device connection
-func DisconnectRTU(ctx *serial.SerialPort) {
+func DisconnectRTU(ctx serial.SerialPort) {
 	ctx.Close()
 }
 
@@ -124,9 +126,21 @@ func viaRTU(connection serial.SerialPort, fnValidator func(byte) bool, slaveAddr
 		if debug {
 			log.Println("start writing...")
 		}
-		for ax:=connection.Available();connection.Available()>0;ax-- {
-			connection.Read()
+		ierr:=connection.ResetInputBuffer()
+		if ierr != nil {
+			if debug {
+				log.Println(fmt.Sprintf("RTU Clear Read Buffer Err: %s", ierr))
+			}
+			return []byte{}, ierr
 		}
+		oerr:=connection.ResetOutputBuffer()
+		if oerr != nil {
+			if debug {
+				log.Println(fmt.Sprintf("RTU Clear Write Buffer Err: %s", oerr))
+			}
+			return []byte{}, oerr
+		}
+		
 		_, werr := connection.Write(adu)
 		if werr != nil {
 			if debug {
@@ -142,9 +156,6 @@ func viaRTU(connection serial.SerialPort, fnValidator func(byte) bool, slaveAddr
 		for x:=0;x<frame.TimeoutInMilliseconds;x+=1  {
 			// allow the slave device adequate time to respond
 			time.Sleep(1 * time.Millisecond)
-			if connection.Available()>0 {
-				break
-			}
 		}
 		
 		// then attempt to read the reply
@@ -152,17 +163,14 @@ func viaRTU(connection serial.SerialPort, fnValidator func(byte) bool, slaveAddr
 		if debug {
 			log.Println("start reading...")
 		}
-		n:=connection.Available();
-		var rerr error
-		for ax:=0;ax<n;ax++ {
-			response[ax], rerr = connection.Read()
+		response, rerr = connection.Read()
 		
-			if rerr != nil {
-				if debug {
-					log.Println(fmt.Sprintf("RTU Read Err: %s", rerr))
-				}
-				return []byte{}, rerr
+		if rerr != nil {
+			if debug {
+				log.Println(fmt.Sprintf("RTU Read Err: %s", rerr))
 			}
+			return []byte{}, rerr
+		}
 		}
 		if debug {
 			log.Println("...reading done")
